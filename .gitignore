@@ -22,3 +22,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+/_deploy/docker-compose/config/.env
+/_deploy/docker-compose/config/onto-demo-server.env

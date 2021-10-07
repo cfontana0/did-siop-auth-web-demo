@@ -1,0 +1,35 @@
+version: '3'
+services:
+  traefik:
+    image: traefik:latest
+    command: >
+      --providers.docker
+      --providers.docker.exposedbydefault=false
+      --entrypoints.web.address=:80
+      --log.level=INFO
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./providers/:/providers/
+    labels:
+      - "traefik.enable=true"
+
+  onto-demo-server:
+    image: ${IMAGE_REPO_HOST}/sphereon-sites/poe-webapp-js
+    env_file:
+      - config/onto-demo-server.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.onto-demo-server.rule=(Host(`${HOST}`) && Path(`/backend`)) || (Host(`${HOST}`) && Path(`/ext`))"
+      - "traefik.http.routers.onto-demo-server.entrypoints=web"
+
+
+  onto-demo-client:
+    image: ${IMAGE_REPO_HOST}/sphereon-sites/poe-webapp-js
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.onto-demo-client.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.onto-demo-client.entrypoints=web"
+
+
